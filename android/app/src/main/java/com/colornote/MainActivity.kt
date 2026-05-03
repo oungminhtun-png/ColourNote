@@ -1,4 +1,4 @@
-package com.colornote
+package com.dynamixwave.colornote
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

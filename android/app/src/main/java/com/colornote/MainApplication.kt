@@ -1,4 +1,4 @@
-package com.colornote
+package com.dynamixwave.colornote
 
 import android.app.Application
 import com.facebook.react.PackageList
