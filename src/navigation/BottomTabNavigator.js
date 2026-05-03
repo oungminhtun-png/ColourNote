@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Ionicons from 'react-native-vector-icons/dist/Ionicons';
 
 // Screens Import - လမ်းကြောင်း မှန်ကန်ပါစေ
 import HomeScreen from '../screens/HomeScreen';

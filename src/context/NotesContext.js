@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage'; // ပိတ်ထားပြီးသား
 
 const NotesContext = createContext();
 
@@ -13,10 +13,13 @@ export const NotesProvider = ({ children }) => {
 
   const loadNotes = async () => {
     try {
-      const savedNotes = await AsyncStorage.getItem('@my_notes');
+      // AsyncStorage မရှိသေးတဲ့အတွက် ဒီအတိုင်း ခဏပိတ်ထားပါ
+      /* const savedNotes = await AsyncStorage.getItem('@my_notes');
       if (savedNotes !== null) {
         setNotes(JSON.parse(savedNotes));
-      }
+      } 
+      */
+      console.log('AsyncStorage disabled for now');
     } catch (e) {
       console.log('Failed to load notes.', e);
     }
@@ -29,7 +32,8 @@ export const NotesProvider = ({ children }) => {
 
   const saveNotesToStorage = async (currentNotes) => {
     try {
-      await AsyncStorage.setItem('@my_notes', JSON.stringify(currentNotes));
+      // AsyncStorage မရှိသေးတဲ့အတွက် ဒီအတိုင်း ခဏပိတ်ထားပါ
+      // await AsyncStorage.setItem('@my_notes', JSON.stringify(currentNotes));
     } catch (e) {
       console.log('Failed to save notes.', e);
     }
