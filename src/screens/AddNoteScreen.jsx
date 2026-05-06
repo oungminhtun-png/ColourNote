@@ -1,27 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import ColorPicker from 'react-native-wheel-color-picker';
 import { useNotes } from '../context/NotesContext';
-
-const COLORS = ['#FFF29C', '#FF8B94', '#D1C4E9', '#B3E5FC', '#C8E6C9', '#FFCCBC', '#B2EBF2', '#D7CCC8', '#CFD8DC'];
 
 const AddNoteScreen = ({ navigation, route }) => {
   const { addNote, updateNote } = useNotes();
-  
-  // Edit လုပ်ဖို့ data ပါလာသလား စစ်ဆေးခြင်း
   const editNote = route.params?.editNote;
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [selectedColor, setSelectedColor] = useState(COLORS[0]);
+  const [selectedColor, setSelectedColor] = useState('#FEF38C'); // Default color
 
-  // Edit Mode ဆိုလျှင် မူလ data များကို နေရာချခြင်း
+  // Edit Mode အတွက် data ပြန်ဖြည့်ခြင်း
   useEffect(() => {
     if (editNote) {
       setTitle(editNote.title);
       setContent(editNote.content);
-      setSelectedColor(editNote.color);
+      setSelectedColor(editNote.color || '#FEF38C');
     }
   }, [editNote]);
 
@@ -31,94 +37,178 @@ const AddNoteScreen = ({ navigation, route }) => {
       return;
     }
 
+    const noteData = {
+      title,
+      content,
+      color: selectedColor,
+      date: new Date().toLocaleDateString(),
+    };
+
     if (editNote) {
-      // Note အဟောင်းကို ပြင်ခြင်း
-      updateNote(editNote.id, title, content, selectedColor);
+      updateNote({ id: editNote.id, ...noteData });
     } else {
-      // Note အသစ်ထည့်ခြင်း
-      addNote(title, content, selectedColor);
+      addNote(noteData);
     }
     navigation.goBack();
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="close" size={28} color="white" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{editNote ? 'Edit Note' : 'Add Note'}</Text>
-        <TouchableOpacity onPress={handleSave}>
-          <Ionicons name="checkmark" size={28} color="white" />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <TextInput
-          placeholder="Title"
-          placeholderTextColor="#636e72"
-          style={styles.titleInput}
-          value={title}
-          onChangeText={setTitle}
-        />
-
-        <View style={styles.contentBox}>
-          <TextInput
-            placeholder="Write something..."
-            placeholderTextColor="#636e72"
-            multiline
-            style={styles.contentInput}
-            value={content}
-            onChangeText={(text) => text.length <= 500 && setContent(text)}
-          />
-          <Text style={styles.charCount}>{content.length} / 500</Text>
-        </View>
-
-        <Text style={styles.sectionLabel}>Choose Color</Text>
-        <FlatList
-          data={COLORS}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => item}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={[styles.colorCircle, { backgroundColor: item }]}
-              onPress={() => setSelectedColor(item)}
-            >
-              {selectedColor === item && <Ionicons name="checkmark" size={20} color="#333" />}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Ionicons name="close-outline" size={30} color="white" />
             </TouchableOpacity>
-          )}
-          style={styles.colorList}
-        />
-      </ScrollView>
+            <Text style={styles.headerTitle}>
+              {editNote ? 'Edit Note' : 'Add Note'}
+            </Text>
+            <TouchableOpacity onPress={handleSave}>
+              <Ionicons name="checkmark-outline" size={30} color="white" />
+            </TouchableOpacity>
+          </View>
 
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.cancelBtn} onPress={() => navigation.goBack()}>
-          <Text style={styles.btnText}>Cancel</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-          <Text style={styles.btnText}>{editNote ? 'Update' : 'Save'}</Text>
-        </TouchableOpacity>
-      </View>
+          {/* Title Input */}
+          <TextInput
+            style={styles.titleInput}
+            placeholder="Title"
+            placeholderTextColor="#636e72"
+            value={title}
+            onChangeText={setTitle}
+          />
+
+          {/* Content Input Box */}
+          <View style={styles.contentBox}>
+            <TextInput
+              style={styles.contentInput}
+              placeholder="Write something..."
+              placeholderTextColor="#636e72"
+              multiline
+              value={content}
+              onChangeText={setContent}
+            />
+            {/* <Text style={styles.charCount}>{content.length} / characters</Text> */}
+          </View>
+
+          {/* Color Wheel Section */}
+          <Text style={styles.sectionLabel}>Choose Color</Text>
+          <View style={styles.pickerContainer}>
+            <ColorPicker
+              color={selectedColor}
+              onColorChangeComplete={(color) => setSelectedColor(color)}
+              thumbSize={25}
+              sliderSize={25}
+              noSnap={true}
+              row={false}
+            />
+          </View>
+
+          {/* Footer Buttons */}
+          <View style={styles.footer}>
+            <TouchableOpacity
+              style={styles.cancelBtn}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.btnText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
+              <Text style={styles.btnText}>Save</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#121421', paddingHorizontal: 20 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 15 },
-  headerTitle: { color: 'white', fontSize: 20, fontWeight: 'bold' },
-  titleInput: { backgroundColor: '#1e222d', color: 'white', fontSize: 18, borderRadius: 15, padding: 15, marginBottom: 20 },
-  contentBox: { backgroundColor: '#1e222d', borderRadius: 15, padding: 15, minHeight: 250, justifyContent: 'space-between' },
-  contentInput: { color: 'white', fontSize: 16, textAlignVertical: 'top', flex: 1 },
-  charCount: { color: '#636e72', textAlign: 'right', fontSize: 12, marginTop: 10 },
-  sectionLabel: { color: 'white', fontSize: 16, marginTop: 25, marginBottom: 15 },
-  colorList: { marginBottom: 30 },
-  colorCircle: { width: 45, height: 45, borderRadius: 22.5, marginRight: 15, justifyContent: 'center', alignItems: 'center' },
-  footer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
-  cancelBtn: { flex: 1, backgroundColor: '#2d3436', padding: 15, borderRadius: 25, alignItems: 'center', marginRight: 10 },
-  saveBtn: { flex: 1, backgroundColor: '#6C5CE7', padding: 15, borderRadius: 25, alignItems: 'center', marginLeft: 10 },
-  btnText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
+  container: {
+    flex: 1,
+    backgroundColor: '#121421',
+    paddingHorizontal: 20
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 15
+  },
+  headerTitle: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold'
+  },
+  titleInput: {
+    backgroundColor: '#1e222d',
+    color: 'white',
+    fontSize: 18,
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 20
+  },
+  contentBox: {
+    backgroundColor: '#1e222d',
+    borderRadius: 15,
+    padding: 15,
+    minHeight: 250,
+    justifyContent: 'space-between'
+  },
+  contentInput: {
+    color: 'white',
+    fontSize: 16,
+    textAlignVertical: 'top',
+    flex: 1
+  },
+  charCount: {
+    color: '#636e72',
+    textAlign: 'right',
+    fontSize: 12,
+    marginTop: 10
+  },
+  sectionLabel: {
+    color: 'white',
+    fontSize: 16,
+    marginTop: 25,
+    marginBottom: 15
+  },
+  pickerContainer: {
+    height: 280, // Wheel ပေါ်ဖို့ နေရာပေးခြင်း
+    marginBottom: 40,
+    backgroundColor: '#1e222d',
+    borderRadius: 20,
+    padding: 20,
+    justifyContent: 'center',
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 50,
+    marginTop: 10,
+  },
+  cancelBtn: {
+    flex: 1,
+    backgroundColor: '#2d3436',
+    padding: 15,
+    borderRadius: 25,
+    alignItems: 'center',
+    marginRight: 10
+  },
+  saveBtn: {
+    flex: 1,
+    backgroundColor: '#6C5CE7',
+    padding: 15,
+    borderRadius: 25,
+    alignItems: 'center',
+    marginLeft: 10
+  },
+  btnText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold'
+  },
 });
 
 export default AddNoteScreen;

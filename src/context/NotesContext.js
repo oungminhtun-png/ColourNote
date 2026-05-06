@@ -55,8 +55,32 @@ export const NotesProvider = ({ children }) => {
     setNotes(notes.map(note => (note.id === updatedNote.id ? updatedNote : note)));
   };
 
+  // NotesContext.js ထဲမှာ ဒါလေးတွေ ထပ်တိုးပေးပါ
+  const toggleFavorite = (id) => {
+    setNotes(notes.map(note =>
+      note.id === id ? { ...note, isFavorite: !note.isFavorite } : note
+    ));
+  };
+
+  const togglePin = (id) => {
+    setNotes(notes.map(note =>
+      note.id === id ? { ...note, isPinned: !note.isPinned } : note
+    ));
+  };
+
+  const duplicateNote = (note) => {
+    const newNote = {
+      ...note,
+      id: Date.now(), // ID အသစ်ပေးရန်
+      title: `${note.title} (Copy)`,
+      date: new Date().toLocaleDateString(),
+    };
+    setNotes([newNote, ...notes]);
+  };
+
+  // Provider ရဲ့ value ထဲမှာလည်း အသစ်ထည့်ထားတဲ့ function တွေကို ထည့်ပေးဖို့ မမေ့ပါနဲ့
   return (
-    <NotesContext.Provider value={{ notes, addNote, deleteNote, updateNote }}>
+    <NotesContext.Provider value={{ notes, addNote, deleteNote, updateNote, toggleFavorite, togglePin, duplicateNote }}>
       {children}
     </NotesContext.Provider>
   );

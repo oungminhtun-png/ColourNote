@@ -5,7 +5,8 @@ import Ionicons from 'react-native-vector-icons/dist/Ionicons';
 // Screens Import - လမ်းကြောင်း မှန်ကန်ပါစေ
 import HomeScreen from '../screens/HomeScreen';
 import FavouriteScreen from '../screens/FavouriteScreen';
-import DeleteScreen from '../screens/DeleteScreen';
+import SearchScreen from '../screens/SearchScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -29,8 +30,10 @@ const BottomTabNavigator = () => {
             iconName = focused ? 'grid' : 'grid-outline';
           } else if (route.name === 'Favourites') {
             iconName = focused ? 'star' : 'star-outline';
-          } else if (route.name === 'Trash') {
-            iconName = focused ? 'trash' : 'trash-outline';
+          } else if (route.name === 'Search') {
+            iconName = focused ? 'search' : 'search-outline';
+          } else if (route.name === 'Settings') {
+            iconName = focused ? 'settings' : 'settings-outline';
           }
           return <Ionicons name={iconName} size={28} color={color} />;
         },
@@ -38,7 +41,8 @@ const BottomTabNavigator = () => {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Favourites" component={FavouriteScreen} />
-      <Tab.Screen name="Trash" component={DeleteScreen} />
+      <Tab.Screen name="Search" component={SearchScreen} />
+      <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
 };
