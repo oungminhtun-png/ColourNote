@@ -1,86 +1,109 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-// import AsyncStorage from '@react-native-async-storage/async-storage'; // ပိတ်ထားပြီးသား
+import React, { createContext, useState, useEffect, useContext } from 'react';
+// သွင်းလိုက်တဲ့ Package အသစ်ကို ဒီကနေ ခေါ်သုံးရပါမယ်
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NotesContext = createContext();
 
 export const NotesProvider = ({ children }) => {
   const [notes, setNotes] = useState([]);
 
-  // --- ၁။ App စဖွင့်ချိန်မှာ ဖုန်းထဲက Note တွေကို ပြန်ယူခြင်း ---
+  // App စဖွင့်လိုက်တိုင်း ဖုန်းထဲမှာ သိမ်းထားတဲ့ Note တွေကို ပြန်ဖတ်မယ်
   useEffect(() => {
     loadNotes();
   }, []);
 
   const loadNotes = async () => {
     try {
-      // AsyncStorage မရှိသေးတဲ့အတွက် ဒီအတိုင်း ခဏပိတ်ထားပါ
-      /* const savedNotes = await AsyncStorage.getItem('@my_notes');
-      if (savedNotes !== null) {
-        setNotes(JSON.parse(savedNotes));
-      } 
-      */
-      console.log('AsyncStorage disabled for now');
+      const storedNotes = await AsyncStorage.getItem('@notes_list');
+      if (storedNotes !== null) {
+        setNotes(JSON.parse(storedNotes));
+      }
     } catch (e) {
-      console.log('Failed to load notes.', e);
+      console.error('Error reading notes from storage:', e);
     }
   };
 
-  // --- ၂။ Note တွေ ပြောင်းလဲတိုင်း ဖုန်းထဲမှာ အလိုအလျောက် သိမ်းခြင်း ---
-  useEffect(() => {
-    saveNotesToStorage(notes);
-  }, [notes]);
-
-  const saveNotesToStorage = async (currentNotes) => {
+  // Data ပြောင်းလဲမှုရှိတိုင်း ဖုန်းထဲမှာ အမြဲတမ်း သိမ်းပေးမယ့် Function
+  const saveNotes = async (newNotes) => {
     try {
-      // AsyncStorage မရှိသေးတဲ့အတွက် ဒီအတိုင်း ခဏပိတ်ထားပါ
-      // await AsyncStorage.setItem('@my_notes', JSON.stringify(currentNotes));
+      await AsyncStorage.setItem('@notes_list', JSON.stringify(newNotes));
     } catch (e) {
-      console.log('Failed to save notes.', e);
+      console.error('Error saving notes to storage:', e);
     }
   };
 
   // Note အသစ်ထည့်ခြင်း
-  const addNote = (note) => {
-    const newNote = { id: Date.now(), ...note };
-    setNotes([newNote, ...notes]);
+  const addNote = (newNote) => {
+    const noteWithId = { 
+      id: Date.now(), 
+      ...newNote, 
+      isFavorite: false, 
+      isPinned: false 
+    };
+    const updatedNotes = [noteWithId, ...notes];
+    setNotes(updatedNotes);
+    saveNotes(updatedNotes);
   };
 
-  // Note ဖြုတ်ခြင်း
+  // Note ဖျက်ခြင်း
   const deleteNote = (id) => {
-    setNotes(notes.filter(note => note.id !== id));
+    const updatedNotes = notes.filter((note) => note.id !== id);
+    setNotes(updatedNotes);
+    saveNotes(updatedNotes);
   };
 
   // Note ပြင်ခြင်း
   const updateNote = (updatedNote) => {
-    setNotes(notes.map(note => (note.id === updatedNote.id ? updatedNote : note)));
+    const updatedNotes = notes.map((note) =>
+      note.id === updatedNote.id ? updatedNote : note
+    );
+    setNotes(updatedNotes);
+    saveNotes(updatedNotes);
   };
 
-  // NotesContext.js ထဲမှာ ဒါလေးတွေ ထပ်တိုးပေးပါ
+  // Favorite (Love icon) ပြောင်းလဲခြင်း
   const toggleFavorite = (id) => {
-    setNotes(notes.map(note =>
+    const updatedNotes = notes.map((note) =>
       note.id === id ? { ...note, isFavorite: !note.isFavorite } : note
-    ));
+    );
+    setNotes(updatedNotes);
+    saveNotes(updatedNotes);
   };
 
+  // Pin လုပ်ခြင်း
   const togglePin = (id) => {
-    setNotes(notes.map(note =>
+    const updatedNotes = notes.map((note) =>
       note.id === id ? { ...note, isPinned: !note.isPinned } : note
-    ));
+    );
+    setNotes(updatedNotes);
+    saveNotes(updatedNotes);
   };
 
+  // Note တစ်ခုကို ပွားခြင်း (Duplicate)
   const duplicateNote = (note) => {
     const newNote = {
       ...note,
-      id: Date.now(), // ID အသစ်ပေးရန်
+      id: Date.now(),
       title: `${note.title} (Copy)`,
       date: new Date().toLocaleDateString(),
     };
-    setNotes([newNote, ...notes]);
+    const updatedNotes = [newNote, ...notes];
+    setNotes(updatedNotes);
+    saveNotes(updatedNotes);
   };
 
-  // Provider ရဲ့ value ထဲမှာလည်း အသစ်ထည့်ထားတဲ့ function တွေကို ထည့်ပေးဖို့ မမေ့ပါနဲ့
   return (
-    <NotesContext.Provider value={{ notes, addNote, deleteNote, updateNote, toggleFavorite, togglePin, duplicateNote }}>
+    <NotesContext.Provider
+      value={{
+        notes,
+        addNote,
+        deleteNote,
+        updateNote,
+        toggleFavorite,
+        togglePin,
+        duplicateNote,
+      }}
+    >
       {children}
     </NotesContext.Provider>
   );
