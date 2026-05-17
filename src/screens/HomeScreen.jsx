@@ -37,9 +37,15 @@ const HomeScreen = ({ navigation }) => {
       onPress={() => navigation.navigate('AddNote', { editNote: item })}
     >
       <View style={styles.cardHeader}>
-        <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
+        {/* 🌟 Title မှာ user ရွေးချယ်ထားတဲ့ စာလုံးအရောင် ပြောင်းလဲနိုင်ရန် style ထည့်သွင်းထားပါသည် */}
+        <Text 
+          style={[styles.cardTitle, { color: item.textColor || '#121421' }]} 
+          numberOfLines={1}
+        >
+          {item.title}
+        </Text>
 
-        {/* Heart နှင့် Menu Button များကို ဘေးချင်းယှဉ်ထားခြင်း */}
+        {/* Heart နှင့် Menu Button များ */}
         <View style={styles.statusIcons}>
           <TouchableOpacity
             onPress={() => toggleFavorite(item.id)}
@@ -48,7 +54,7 @@ const HomeScreen = ({ navigation }) => {
             <Ionicons
               name={item.isFavorite ? "heart" : "heart-outline"}
               size={22}
-              color={item.isFavorite ? "#ff4757" : "#121421"}
+              color={item.isFavorite ? "#ff4757" : (item.textColor || "#121421")} // 🌟 Icon အရောင်ပါ လိုက်ပြောင်းပေးပါသည်
             />
           </TouchableOpacity>
 
@@ -56,17 +62,25 @@ const HomeScreen = ({ navigation }) => {
             onPress={(event) => openMenu(event, item)}
             style={styles.iconBtn}
           >
-            <Ionicons name="ellipsis-vertical" size={20} color="#121421" />
+            {/* 🌟 Menu Icon ကိုလည်း Note Text Color အတိုင်း လိုက်ညှိပေးထားပါသည် */}
+            <Ionicons name="ellipsis-vertical" size={20} color={item.textColor || "#121421"} />
           </TouchableOpacity>
         </View>
       </View>
 
-      <Text style={styles.cardContent} numberOfLines={4}>{item.content}</Text>
+      {/* 🌟 Content မှာလည်း user ရွေးချယ်ထားတဲ့ စာလုံးအရောင် ပြောင်းလဲနိုင်ရန် style ထည့်သွင်းထားပါသည် */}
+      <Text 
+        style={[styles.cardContent, { color: item.textColor ? item.textColor + 'CC' : '#444444' }]} // 'CC' ထည့်ခြင်းက စာသားကို 80% opacity ဖြစ်စေပြီး ပိုမိုလှပစေပါတယ်
+        numberOfLines={4}
+      >
+        {item.content}
+      </Text>
 
       <View style={styles.cardFooter}>
         <View style={styles.dateBox}>
-          <Ionicons name="time-outline" size={12} color="#555" />
-          <Text style={styles.cardDate}>{item.date}</Text>
+          {/* 🌟 Time Icon နှင့် Date စာသားကိုလည်း လိုက်ဖက်အောင် အရောင်ညှိထားပါသည် */}
+          <Ionicons name="time-outline" size={12} color={item.textColor || "#555555"} />
+          <Text style={[styles.cardDate, { color: item.textColor || "#444444" }]}>{item.date}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -137,7 +151,6 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
-// Sub-component for Menu Items
 const MenuItem = ({ icon, text, color, onPress }) => (
   <TouchableOpacity style={styles.menuItem} onPress={onPress}>
     <Ionicons name={icon} size={18} color={color} />
@@ -160,10 +173,10 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  cardTitle: { fontSize: 18, fontWeight: 'bold', color: '#121421', flex: 1 },
+  cardTitle: { fontSize: 18, fontWeight: 'bold', flex: 1 },
   statusIcons: { flexDirection: 'row', alignItems: 'center' },
   iconBtn: { padding: 5, marginLeft: 5 },
-  cardContent: { fontSize: 14, color: '#444', marginTop: 10, lineHeight: 20 },
+  cardContent: { fontSize: 14, marginTop: 10, lineHeight: 20 },
   cardFooter: { marginTop: 15 },
   dateBox: {
     flexDirection: 'row',
@@ -174,7 +187,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 12,
   },
-  cardDate: { fontSize: 11, color: '#444', marginLeft: 5 },
+  cardDate: { fontSize: 11, marginLeft: 5 },
 
   // FAB Style
   fab: {

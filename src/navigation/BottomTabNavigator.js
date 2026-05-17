@@ -26,15 +26,19 @@ const BottomTabNavigator = () => {
         tabBarShowLabel: false,
         tabBarIcon: ({ focused, color }) => {
           let iconName;
+          
           if (route.name === 'Home') {
-            iconName = focused ? 'grid' : 'grid-outline';
+            // စာရွက်ပေါ်မှာ စာသားပါတဲ့ပုံစံ (document-text)
+            iconName = focused ? 'document-text' : 'document-text-outline';
           } else if (route.name === 'Favourites') {
-            iconName = focused ? 'star' : 'star-outline';
+            // 🌟 Favourites အတွက် star နေရာမှာ အသည်းပုံစံ (heart) သို့ ပြောင်းလဲထားပါတယ်ဗျာ
+            iconName = focused ? 'heart' : 'heart-outline';
           } else if (route.name === 'Search') {
             iconName = focused ? 'search' : 'search-outline';
           } else if (route.name === 'Settings') {
             iconName = focused ? 'settings' : 'settings-outline';
           }
+          
           return <Ionicons name={iconName} size={28} color={color} />;
         },
       })}
@@ -47,4 +51,4 @@ const BottomTabNavigator = () => {
   );
 };
 
-export default BottomTabNavigator; // ဤစာကြောင်း ပါဝင်ရန် အလွန်အရေးကြီးပါသည်
+export default BottomTabNavigator;

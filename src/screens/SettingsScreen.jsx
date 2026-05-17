@@ -13,18 +13,41 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const SettingsScreen = ({ navigation }) => {
 
+  // သင့် App ရဲ့ Play Store က Package Name (Application ID)
+  const appId = 'com.dynamixwave.colornote'; 
+
   // App ကို Share လုပ်ရန် Function
   const onShare = async () => {
     try {
       await Share.share({
-        message: 'Download ColorNote App and organize your thoughts! [PlayStore Link Here]',
+        message: `Download ColorNote App and organize your thoughts! https://play.google.com/store/apps/details?id=${appId}`,
       });
     } catch (error) {
       console.log(error.message);
     }
   };
 
-  // Link များဖွင့်ရန် Function
+  // Rate Us ပေးရန်အတွက် Play Store App သို့ တိုက်ရိုက်သွားမည့် Function
+  const handleRateUs = () => {
+    const playStoreUrl = `market://details?id=${appId}`;
+    const webUrl = `https://play.google.com/store/apps/details?id=${appId}`;
+
+    Linking.canOpenURL(playStoreUrl)
+      ? Linking.openURL(playStoreUrl)
+      : Linking.openURL(webUrl);
+  };
+
+  // Check for Update အတွက် User ကို Play Store က App Page ဆီ တိုက်ရိုက်ပို့ပေးမည့် Function
+  const handleCheckUpdate = () => {
+    const playStoreUrl = `market://details?id=${appId}`;
+    const webUrl = `https://play.google.com/store/apps/details?id=${appId}`;
+
+    Linking.canOpenURL(playStoreUrl)
+      ? Linking.openURL(playStoreUrl)
+      : Linking.openURL(webUrl);
+  };
+
+  // အထွေထွေ Link များဖွင့်ရန် Function
   const handleLink = (url) => {
     Linking.openURL(url).catch((err) => console.error("An error occurred", err));
   };
@@ -41,7 +64,7 @@ const SettingsScreen = ({ navigation }) => {
         {/* Menu Items */}
         <View style={styles.menuGroup}>
           
-          {/* About App - နှိပ်လိုက်ရင် About Screen ကို သွားရန် ပြင်ဆင်ထားသည် */}
+          {/* About App */}
           <SettingItem 
             icon="information-circle-outline" 
             title="About ColorNote" 
@@ -59,7 +82,7 @@ const SettingsScreen = ({ navigation }) => {
           <SettingItem 
             icon="star-outline" 
             title="Rate Us" 
-            onPress={() => handleLink('https://play.google.com/store')} 
+            onPress={handleRateUs} 
           />
 
           {/* More Apps */}
@@ -69,11 +92,11 @@ const SettingsScreen = ({ navigation }) => {
             onPress={() => handleLink('https://play.google.com/store/apps/developer?id=YourID')} 
           />
 
-          {/* Telegram Contact - Telegram Icon ထည့်ထားသည် */}
+          {/* 🌟 Telegram Contact - Telegram အစား သေချာပေါက်ရှိမည့် paper-plane-outline သို့ ပြောင်းလဲထားသည် */}
           <SettingItem 
-            icon="logo-telegram" 
+            icon="paper-plane-outline" 
             title="Telegram Contact" 
-            iconColor="#0088cc" // Telegram Color
+            iconColor="#26A5E4" // Telegram Official Color Code
             onPress={() => handleLink('https://t.me/yourusername')} 
           />
 
@@ -81,7 +104,8 @@ const SettingsScreen = ({ navigation }) => {
           <SettingItem 
             icon="refresh-outline" 
             title="Check for Update" 
-            onPress={() => alert("Your app is up to date!")} 
+            iconColor="#55efc4" 
+            onPress={handleCheckUpdate} 
           />
 
         </View>
@@ -126,7 +150,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30 
   },
   menuGroup: { 
-    gap: 12 // Item တစ်ခုနဲ့တစ်ခု ကြားအကွာအဝေး
+    gap: 12 
   },
   itemCard: { 
     flexDirection: 'row', 
