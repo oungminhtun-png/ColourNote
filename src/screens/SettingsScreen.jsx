@@ -41,11 +41,11 @@ const SettingsScreen = ({ navigation }) => {
         {/* Menu Items */}
         <View style={styles.menuGroup}>
           
-          {/* About App */}
+          {/* About App - နှိပ်လိုက်ရင် About Screen ကို သွားရန် ပြင်ဆင်ထားသည် */}
           <SettingItem 
             icon="information-circle-outline" 
             title="About ColorNote" 
-            onPress={() => alert("ColorNote Version 1.1.0\nDeveloped by DynamixWave")} 
+            onPress={() => navigation.navigate('About')} 
           />
 
           {/* Share App */}
@@ -136,9 +136,7 @@ const styles = StyleSheet.create({
     paddingVertical: 18, 
     paddingHorizontal: 20, 
     borderRadius: 20,
-    // Android အတွက် shadow
     elevation: 3,
-    // iOS အတွက် shadow
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,

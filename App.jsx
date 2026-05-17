@@ -10,6 +10,8 @@ import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 import AddNoteScreen from './src/screens/AddNoteScreen';
 import SearchScreen from './src/screens/SearchScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
+// 🌟 ၁။ AboutScreen ဖိုင်ကို Import လုပ်ပါ (သင့်ဖိုင်လမ်းကြောင်းအတိုင်း စစ်ဆေးပါ)
+import AboutScreen from './src/screens/AboutScreen'; 
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +26,10 @@ export default function App() {
           {/* Modal ပုံစံ ပေါ်ချင်တဲ့ Screen များ */}
           <Stack.Screen name="Search" component={SearchScreen} />
           <Stack.Screen name="Settings" component={SettingsScreen} />
+          
+          {/* 🌟 ၂။ Settings ကနေ လှမ်းခေါ်လို့ရအောင် About Screen လမ်းကြောင်း ထည့်ပေးခြင်း */}
+          <Stack.Screen name="About" component={AboutScreen} />
+
           <Stack.Screen 
             name="AddNote" 
             component={AddNoteScreen} 

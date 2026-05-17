@@ -42,9 +42,13 @@ const AddNoteScreen = ({ navigation, route }) => {
       content,
       color: selectedColor,
       date: new Date().toLocaleDateString(),
+      // 🌟 ဒီအပိုင်းက အသက်ပါပဲဗျာ - editNote ရှိရင် မူလ Status အမှန်ကို သိမ်းထားမယ်၊ မရှိရင် false ပေးမယ်
+      isFavorite: editNote ? editNote.isFavorite : false,
+      isPinned: editNote ? editNote.isPinned : false,
     };
 
     if (editNote) {
+      // Edit လုပ်တာဖြစ်လို့ id ရော status တွေပါ တစ်ခါတည်း update လုပ်မယ်
       updateNote({ id: editNote.id, ...noteData });
     } else {
       addNote(noteData);
@@ -91,7 +95,6 @@ const AddNoteScreen = ({ navigation, route }) => {
               value={content}
               onChangeText={setContent}
             />
-            {/* <Text style={styles.charCount}>{content.length} / characters</Text> */}
           </View>
 
           {/* Color Wheel Section */}
@@ -124,6 +127,7 @@ const AddNoteScreen = ({ navigation, route }) => {
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -162,12 +166,6 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     flex: 1
   },
-  charCount: {
-    color: '#636e72',
-    textAlign: 'right',
-    fontSize: 12,
-    marginTop: 10
-  },
   sectionLabel: {
     color: 'white',
     fontSize: 16,
@@ -175,7 +173,7 @@ const styles = StyleSheet.create({
     marginBottom: 15
   },
   pickerContainer: {
-    height: 280, // Wheel ပေါ်ဖို့ နေရာပေးခြင်း
+    height: 280,
     marginBottom: 40,
     backgroundColor: '#1e222d',
     borderRadius: 20,
